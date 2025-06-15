@@ -40,8 +40,8 @@ pipeline {
     stage('Deploy to Kubernetes') {
       steps {
         sh '''
-          sed "s|IMAGE_PLACEHOLDER|$IMAGE_NAME:$BUILD_NUMBER|" k8s/deployment.yaml | kubectl apply -f -
-          kubectl apply -f k8s/service.yaml
+          sed "s|IMAGE_PLACEHOLDER|$IMAGE_NAME:$BUILD_NUMBER|" deployment.yaml | kubectl apply -f -
+          kubectl apply -f service.yaml
         '''
       }
     }
