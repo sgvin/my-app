@@ -10,7 +10,10 @@ pipeline {
     stage('SonarQube Scan') {
       steps {
         withSonarQubeEnv('jenkins') {
-          sh 'sonar-scanner'
+          sh '''
+          export PATH=/opt/sonar-scanner/bin:$PATH
+          sonar-scanner
+          '''
         }
       }
     }
