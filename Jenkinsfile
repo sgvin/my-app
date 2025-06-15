@@ -11,6 +11,7 @@ pipeline {
       steps {
         withSonarQubeEnv('jenkins') {
           sh '''
+          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
           export PATH=/opt/sonar-scanner/bin:$PATH
           sonar-scanner
           '''
