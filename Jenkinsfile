@@ -2,38 +2,48 @@ pipeline {
   agent any
 
   environment {
-    IMAGE_NAME = "your-dockerhub-username/my-node-app"
+    IMAGE_NAME = "yourdockerhubusername/nodejs-cicd-app"
+    SONAR_TOKEN = credentials('sonarqube-token-id')
   }
 
   stages {
-    stage('Clone Repo') {
+    stage('Checkout') {
       steps {
-        git 'https://github.com/<your-username>/my-app.git'
+        git 'https://github.com/yourusername/nodejs-cicd-project.git'
+      }
+    }
+
+    stage('SonarQube Scan') {
+      steps {
+        withSonarQubeEnv('SonarQube') {
+          sh 'sonar-scanner'
+        }
       }
     }
 
     stage('Build Docker Image') {
       steps {
-        script {
-          docker.build("${IMAGE_NAME}:latest")
-        }
+        sh 'docker build -t $IMAGE_NAME:$BUILD_NUMBER .'
       }
     }
 
-    stage('Push to Docker Hub') {
+    stage('Push Docker Image') {
       steps {
-        withDockerRegistry([credentialsId: 'dockerhub-creds', url: '']) {
-          script {
-            docker.image("${IMAGE_NAME}:latest").push()
-          }
+        withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+          sh '''
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            docker push $IMAGE_NAME:$BUILD_NUMBER
+          '''
         }
       }
     }
 
     stage('Deploy to Kubernetes') {
       steps {
-        sh 'kubectl apply -f deployment.yaml'
-        sh 'kubectl apply -f service.yaml'
+        sh '''
+          sed "s|IMAGE_PLACEHOLDER|$IMAGE_NAME:$BUILD_NUMBER|" k8s/deployment.yaml | kubectl apply -f -
+          kubectl apply -f k8s/service.yaml
+        '''
       }
     }
   }

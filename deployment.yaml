@@ -1,19 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-node-app
+  name: nodejs-cicd-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: my-node-app
+      app: nodejs-cicd
   template:
     metadata:
       labels:
-        app: my-node-app
+        app: nodejs-cicd
     spec:
       containers:
-      - name: node-container
-        image: <your-dockerhub-username>/my-node-app:latest
+      - name: nodejs-cicd
+        image: IMAGE_PLACEHOLDER
         ports:
-        - containerPort: 3000
+        - containerPort: 8080
+
