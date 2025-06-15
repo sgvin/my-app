@@ -2,20 +2,20 @@ pipeline {
   agent any
 
   environment {
-    IMAGE_NAME = "yourdockerhubusername/nodejs-cicd-app"
-    SONAR_TOKEN = credentials('sonarqube-token-id')
+    IMAGE_NAME = "vindoker/nodejs-cicd-app"
+    SONAR_TOKEN = credentials('sonar-auth-token')
   }
 
   stages {
     stage('Checkout') {
       steps {
-        git 'https://github.com/yourusername/nodejs-cicd-project.git'
+        git 'https://github.com/sgvin/my-app.git'
       }
     }
 
     stage('SonarQube Scan') {
       steps {
-        withSonarQubeEnv('SonarQube') {
+        withSonarQubeEnv('jenkins') {
           sh 'sonar-scanner'
         }
       }
@@ -29,7 +29,7 @@ pipeline {
 
     stage('Push Docker Image') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
           sh '''
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
             docker push $IMAGE_NAME:$BUILD_NUMBER
