@@ -7,12 +7,6 @@ pipeline {
   }
 
   stages {
-    stage('Checkout') {
-      steps {
-        git 'https://github.com/sgvin/my-app.git'
-      }
-    }
-
     stage('SonarQube Scan') {
       steps {
         withSonarQubeEnv('jenkins') {
