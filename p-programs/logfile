@@ -1,0 +1,6 @@
+INFO: Application started
+ERROR: Failed to connect to database
+WARNING: Low memory
+ERROR: Timeout occurred
+INFO: Application stopped
+ERROR: Disk full
